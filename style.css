@@ -65,3 +65,7 @@ body {
     color: #ffffff;
     margin: 2px;
 }
+
+.message-container {
+    height: 30px;
+}
