@@ -74,7 +74,7 @@ const handleClick = (key) => {
         return
     }
     if(key === 'ENTER') {
-        console.log('check row')
+        checkRow()
         console.log('guessRows', guessRows)
         return
     }
@@ -99,5 +99,16 @@ const deleteLetter = () => {
         tile.textContent = ''
         guessRows[currentRow][currentTile] = ''
         tile.setAttribute('data', '')
+    }
+}
+
+const checkRow = () => {
+    const guess = guessRows[currentRow].join('')
+
+    if(currentTile === 5){
+        console.log('guess is ' + guess + ' wordle is ' + wordle)
+        if(wordle == guess){
+            showMessage('Magnificent!')
+        }
     }
 }
