@@ -128,6 +128,7 @@ const checkRow = () => {
             .then(json => {
                 console.log(json)
                 if(json == 'Entry word not found'){
+                    shakeTile()
                     showMessage('word not in list')
                     return
                 } else {
@@ -194,5 +195,23 @@ const flipTile = () => {
             tile.classList.add(guess[index].color)
             addColorToKey(guess[index].letter, guess[index].color)
         }, 500 * index)
+    })
+}
+
+const shakeTile = () => {
+
+    const rowTiles = document.querySelector('#guessRow-' + currentRow).childNodes
+    rowTiles.forEach(tile => {
+        tile.animate([
+            { transform: 'translateX(0px)' },
+            { transform: 'translateX(3px)' },
+            { transform: 'translateX(-3px)' },
+            { transform: 'translateX(3px)' },
+            { transform: 'translateX(0px)' },
+
+        ], {
+            duration: 300,
+            iterations: 1
+        })
     })
 }
