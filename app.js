@@ -109,6 +109,7 @@ const checkRow = () => {
 
     if(currentTile === 5){
         console.log('guess is ' + guess + ' wordle is ' + wordle)
+        flipTile()
         if(wordle == guess){
             showMessage('Magnificent!')
             isGameOver = true
@@ -135,7 +136,7 @@ const showMessage = (message) => {
 }
 
 const flipTile = () => {
-    const rowTiles = document.querySelector('guessRow-' + currentRow).childNodes
+    const rowTiles = document.querySelector('#guessRow-' + currentRow).childNodes
     rowTiles.forEach((tile, index) => {
         const dataLetter = tile.getAttribute('data')
 
