@@ -5,7 +5,7 @@ const messageDisplay = document.querySelector('.message-container')
 let wordle
 
 const getWordle = () => {
-    fetch('URL-HERE')
+    fetch('http://localhost:8000/word')
         .then(response => response.json())
         .then(json => {
             console.log(json)
