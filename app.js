@@ -104,9 +104,22 @@ const addLetter = (letter) => {
         tile.textContent = letter
         guessRows[currentRow][currentTile] = letter
         tile.setAttribute('data', letter)
+        enlargeTile(tile)
         currentTile++
         console.log('guessRows', guessRows)
     }
+}
+
+const enlargeTile = (tile) => {
+    tile.animate([
+        { transform: 'translateY(0px)' },
+        { transform: 'translateY(-6px)' },
+        { transform: 'translateY(0px)' },
+
+    ], {
+        duration: 150,
+        iterations: 1
+    })
 }
 
 const deleteLetter = () => {
