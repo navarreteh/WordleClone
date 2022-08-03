@@ -1,1 +1,2 @@
 # WordleClone
+credits to kubowania
