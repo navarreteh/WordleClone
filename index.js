@@ -29,4 +29,27 @@ app.get('/word', (req, res) => {
 
 })
 
+
+app.get('/check', (req,res) => {
+    const word = req.query.word
+
+    const options = {
+        method: 'GET',
+        url: 'https://twinword-word-graph-dictionary.p.rapidapi.com/association/',
+        params: {entry: word},
+        headers: {
+          'X-RapidAPI-Key': '3fa67f8514msh298b95247f2f13bp1eb83bjsna7c75e0418f5',
+          'X-RapidAPI-Host': 'twinword-word-graph-dictionary.p.rapidapi.com'
+        }
+      };
+      
+      axios.request(options).then((response) => {
+          console.log(response.data);
+          res.json(response.data.result_msg)
+      }).catch((error) => {
+          console.error(error);
+      });
+})
+
+
 app.listen(PORT, () => console.log('Server running on port ' + PORT))

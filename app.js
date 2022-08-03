@@ -2,8 +2,20 @@ const tileDisplay = document.querySelector('.tile-container')
 const keyboard = document.querySelector('.key-container')
 const messageDisplay = document.querySelector('.message-container')
 
+let wordle
 
-const wordle = 'SUPER'
+const getWordle = () => {
+    fetch('URL-HERE')
+        .then(response => response.json())
+        .then(json => {
+            console.log(json)
+            wordle = json.toUpperCase()
+        })
+        .catch(err => console.log(err))
+}
+
+getWordle()
+
 const keys = [
     'Q',
     'W',
@@ -51,7 +63,7 @@ let isGameOver = false
 guessRows.forEach((guessRow, guessRowIndex) => {
     const rowElement = document.createElement('div')
     rowElement.setAttribute('id', 'guessRow-' + guessRowIndex)
-    guessRow.forEach((guess, guessIndex) => {
+    guessRow.forEach((_guess, guessIndex) => {
         const tileElement = document.createElement('div')
         tileElement.setAttribute('id', 'guessRow-' + guessRowIndex + '-tile-' + guessIndex)
         tileElement.classList.add('tile')
@@ -69,18 +81,21 @@ keys.forEach(key => {
 })
 
 const handleClick = (key) => {
-    console.log('clicked', key);
-    if(key === '<<') {
-        deleteLetter()
-        console.log('guessRows', guessRows)
-        return
+    if(!isGameOver){
+        console.log('clicked', key);
+        if(key === '<<') {
+            deleteLetter()
+            console.log('guessRows', guessRows)
+            return
+        }
+        if(key === 'ENTER') {
+            checkRow()
+            console.log('guessRows', guessRows)
+            return
+        }
+        addLetter(key)
     }
-    if(key === 'ENTER') {
-        checkRow()
-        console.log('guessRows', guessRows)
-        return
-    }
-    addLetter(key)
+    
 }
 
 const addLetter = (letter) => {
@@ -107,26 +122,36 @@ const deleteLetter = () => {
 const checkRow = () => {
     const guess = guessRows[currentRow].join('')
 
-    if(currentTile === 5){
-        console.log('guess is ' + guess + ' wordle is ' + wordle)
-        flipTile()
-        if(wordle == guess){
-            showMessage('Magnificent!')
-            isGameOver = true
-            return
-        } else {
-            if(currentRow >= 5){
-                isGameOver = true
-                showMessage('Game Over')
-                return
-            }
-            if(currentRow < 5){
-                currentRow++
-                currentTile = 0
-            }
-        }
+    if(currentTile > 4){
+        fetch(`http://localhost:8000/check/?word=${guess}`)
+            .then(response => response.json())
+            .then(json => {
+                console.log(json)
+                if(json == 'Entry word not found'){
+                    showMessage('word not in list')
+                    return
+                } else {
+                    console.log('guess is ' + guess + ' wordle is ' + wordle)
+                    flipTile()
+                    if(wordle == guess){
+                        showMessage('Magnificent!')
+                        isGameOver = true
+                        return
+                    } else {
+                        if(currentRow >= 5){
+                            isGameOver = true
+                            showMessage('Game Over')
+                            return
+                        }
+                        if(currentRow < 5){
+                            currentRow++
+                            currentTile = 0
+                        }
+                    }
+                }
+            }).catch(err => console.log(err))
     }
-}
+}    
 
 const showMessage = (message) => {
     const messageElement = document.createElement('p')
@@ -142,21 +167,32 @@ const addColorToKey = (keyLetter, color) => {
 
 const flipTile = () => {
     const rowTiles = document.querySelector('#guessRow-' + currentRow).childNodes
-    rowTiles.forEach((tile, index) => {
-        const dataLetter = tile.getAttribute('data')
+    let checkWordle = wordle
+    const guess = []
 
+    rowTiles.forEach(tile => {
+        guess.push({ letter : tile.getAttribute('data'), color : 'gray-overlay'})
+    })
+
+    guess.forEach((guess, index) => {
+        if(guess.letter == wordle[index]){
+            guess.color = 'green-overlay'
+            checkWordle = checkWordle.replace(guess.letter, '')
+        }
+    })
+
+    guess.forEach(guess => {
+        if(checkWordle.includes(guess.letter)) {
+            guess.color = 'yellow-overlay'
+            checkWordle = checkWordle.replace(guess.letter, '')
+        }
+    })
+
+    rowTiles.forEach((tile, index) => {
         setTimeout(() => {
             tile.classList.add('flip')
-            if(dataLetter == wordle[index]){
-                tile.classList.add('green-overlay')
-                addColorToKey(dataLetter, 'green-overlay')
-            } else if(wordle.includes(dataLetter)) {
-                tile.classList.add('yellow-overlay')
-                addColorToKey(dataLetter, 'yellow-overlay')
-            } else {
-                tile.classList.add('gray-overlay')
-                addColorToKey(dataLetter, 'gray-overlay')
-            }
+            tile.classList.add(guess[index].color)
+            addColorToKey(guess[index].letter, guess[index].color)
         }, 500 * index)
     })
 }
